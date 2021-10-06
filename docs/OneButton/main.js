@@ -1,6 +1,7 @@
-title = "";
+title = "Ducklings";
 
 description = `
+[TAP] to turn
 `;
 
 characters = [];
@@ -8,6 +9,7 @@ characters = [];
 options = {};
 
 function update() {
+  //init
   if (!ticks) {
   }
 }
