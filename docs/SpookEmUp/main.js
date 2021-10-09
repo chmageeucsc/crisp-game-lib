@@ -46,7 +46,9 @@ const G = {
   ENEMY_FIRE_RATE: 45,
 
   EBULLET_SPEED: 2.0,
-  EBULLET_ROTATION_SPD: 0.1
+  EBULLET_ROTATION_SPD: 0.1,
+
+  VISIBLE: 0
 };
 
 options = {
@@ -211,14 +213,19 @@ function update() {
   color ("black");
   char("a", player.pos);
 
-  // Updating and drawing bullets
-  fBullets.forEach((fb) => {
+  if (input.isPressed) {
+    // Updating and drawing bullets
+    fBullets.forEach((fb) => {
     fb.pos.y -= G.FBULLET_SPEED;
 
     // Drawing fBullets for the first time, allowing interaction from enemies
     color("purple");
     box(fb.pos, 2);
-  });
+    G.VISIBLE = 1;
+    });
+  } else {
+    G.VISIBLE = 0;
+  }
 
   // Update for Star
   stars.forEach((s) => {
@@ -261,6 +268,10 @@ function update() {
       addScore(10 * waveCount, e.pos);
     }
 
+    if (e.pos.y > G.HEIGHT) {
+      addScore(-10 * waveCount, e.pos);
+    }
+
     return (isCollidingWithFBullets || e.pos.y > G.HEIGHT);
   });
 
@@ -268,7 +279,7 @@ function update() {
     // Interaction from fBullets to enemies, after enemies have been drawn
     color("light_purple");
     const isCollidingWithEnemies = box(fb.pos, 2).isColliding.char.b;
-    return (isCollidingWithEnemies || fb.pos.y < 0);
+    return (isCollidingWithEnemies || fb.pos.y < 0 || G.VISIBLE <= 0);
   });
 
   remove(eBullets, (eb) => {
