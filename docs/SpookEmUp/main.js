@@ -41,9 +41,9 @@ const G = {
 
   FBULLET_SPEED: 5,
 
-  ENEMY_MIN_BASE_SPEED: 0.5,
-  ENEMY_MAX_BASE_SPEED: 1.0,
-  ENEMY_FIRE_RATE: 45,
+  ENEMY_MIN_BASE_SPEED: 0.25,
+  ENEMY_MAX_BASE_SPEED: 0.75,
+  ENEMY_FIRE_RATE: 90,
 
   EBULLET_SPEED: 2.0,
   EBULLET_ROTATION_SPD: 0.1,
@@ -179,9 +179,14 @@ function update() {
     waveCount++; // Increase the tracking variable by one
   }
 
-  // drawing the player
-  player.pos = vec(input.pos.x, input.pos.y);
-  player.pos.clamp(0, G.WIDTH, 0, G.HEIGHT);
+  if (input.isPressed) {
+    player.pos = player.pos;
+  }
+  else {
+    // drawing the player
+    player.pos = vec(input.pos.x, input.pos.y);
+    player.pos.clamp(0, G.WIDTH, 0, G.HEIGHT);
+  }
   // Cooling down for the next shot
   player.firingCooldown--;
   // Time to fire the next shot
@@ -300,10 +305,11 @@ function update() {
   }
 
     const isCollidingWithFBullets
-            = char("c", eb.pos, {rotation: eb.rotation}).isColliding.rect.purple;
-        if (isCollidingWithFBullets) addScore(1, eb.pos);
-        
-        // If eBullet is not onscreen, remove it
-        return (!eb.pos.isInRect(0, 0, G.WIDTH, G.HEIGHT));
+          = char("c", eb.pos, {rotation: eb.rotation}).isColliding.rect.purple;
+      if (isCollidingWithFBullets) addScore(1, eb.pos);
+      
+      // If eBullet is not onscreen, remove it
+      //return (!eb.pos.isInRect(0, 0, G.WIDTH, G.HEIGHT));
+      return (isCollidingWithFBullets || eb.pos.y > G.HEIGHT);
   });
 }
