@@ -32,7 +32,8 @@ const G = {
   DROPLET_SPEED_MIN: 1.0,
 	DROPLET_SPEED_MAX: 2.0,
   SPIKE_SPEED_MIN: 1.0,
-	SPIKE_SPEED_MAX: 2.0
+	SPIKE_SPEED_MAX: 2.0,
+  MOVING: 0
 }
 
 // Configure game options.
@@ -114,13 +115,15 @@ function update() {
       pos: vec(G.WIDTH * 0.5, G.HEIGHT * 0.5)
     };
   }
-  if (spikes.length === 0) {
+
+  // fix timing for spikes falling
+  /*if (spikes.length === 0) {
     for (let i = 0; i < 3; i++) {
         const posX = rnd(0, G.WIDTH);
         const posY = G.HEIGHT;
-        //spikes.push({ pos: vec(posX, posY), speed: G.SPIKE_SPEED_MIN })
+        spikes.push({ pos: vec(posX, posY), speed: 1 })
     }
-  }
+  }*/
   // Update for Droplet
   droplets.forEach((d) => {
     // Move the droplet downwards
@@ -135,8 +138,10 @@ function update() {
   });
   // Update for Spike
   spikes.forEach((s) => {
-    // Move the spike downwards
-    s.pos.y += s.speed;
+    if (G.MOVING == 1) {
+      // Move the spike downwards
+      s.pos.y += s.speed;
+    }
     // Bring the star back to top once it's past the bottom of the screen
     s.pos.wrap(0, G.WIDTH, 0, G.HEIGHT);
 
@@ -151,10 +156,21 @@ function update() {
   char("b", vec(player.pos));
 
   remove(spikes, (s) => {
-    s.pos.y += s.speed;
     color("black");
-    char("a", s.pos);
-
-    return (s.pos.y > G.HEIGHT);
+    s.pos.y += s.speed;
+      // Interaction from enemies to fBullets
+      // Shorthand to check for collision against another specific type
+      const isCollidingWithPlayer = char("a", s.pos).isColliding.char.b;
+      if (isCollidingWithPlayer) {
+          color("black");
+          particle(s.pos);
+          color("red");
+          particle(s.pos);
+          G.MOVING = 0;
+      }
+      else {G.MOVING = 1;}
+      
+      // Also another condition to remove the object
+      //return s.pos.y > G.HEIGHT;
   });
 }
