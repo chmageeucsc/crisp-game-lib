@@ -158,19 +158,19 @@ function update() {
   remove(spikes, (s) => {
     color("black");
     s.pos.y += s.speed;
-      // Interaction from enemies to fBullets
-      // Shorthand to check for collision against another specific type
-      const isCollidingWithPlayer = char("a", s.pos).isColliding.char.b;
-      if (isCollidingWithPlayer) {
-          color("black");
-          particle(s.pos);
-          color("red");
-          particle(s.pos);
-          G.MOVING = 0;
-      }
-      else {G.MOVING = 1;}
-      
-      // Also another condition to remove the object
-      //return s.pos.y > G.HEIGHT;
+    // Interaction from enemies to fBullets
+    // Shorthand to check for collision against another specific type
+    const isCollidingWithPlayer = char("a", s.pos).isColliding.char.b;
+    if (isCollidingWithPlayer) {
+        color("black");
+        particle(s.pos);
+        color("red");
+        particle(s.pos);
+        G.MOVING = 0;
+    }
+    else {G.MOVING = 1;}
+    
+    // Also another condition to remove the object
+    //return s.pos.y > G.HEIGHT;
   });
 }
