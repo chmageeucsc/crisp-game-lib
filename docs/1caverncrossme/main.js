@@ -8,11 +8,31 @@ description = `
 `;
 
 // User-defined characters can be written here.
-characters = [];
+characters = [
+`
+llllll
+llllll
+ llll  
+ llll  
+  ll   
+  ll   
+`,`
+  r r 
+ rlrlr
+ ryyrr
+  rrr 
+  LrL 
+ LL LL
+`
+];
 
 const G = {
 	WIDTH: 100,
-	HEIGHT: 75
+	HEIGHT: 75,
+  DROPLET_SPEED_MIN: 1.0,
+	DROPLET_SPEED_MAX: 2.0,
+  SPIKE_SPEED_MIN: 1.0,
+	SPIKE_SPEED_MAX: 2.0
 }
 
 // Configure game options.
@@ -25,76 +45,83 @@ options = {
   seed: 400,
 };
 
-// (Optional) Defining the types of variables is useful for
-// code completion and error detection.
-/** @type {{angle: number, length: number, pin: Vector}} */
-let cord;
-/** @type {Vector[]} */
-let pins;
-let nextPinDist;
-const cordLength = 7;
+/**
+* @typedef {{
+  * pos: Vector,
+  * speed: number
+  * }} Droplet
+  */
+  
+  /**
+  * @type  { Droplet [] }
+  */
+  let droplets;
+
+/**
+* @typedef {{
+  * pos: Vector,
+  * speed: number
+  * }} Spike
+  */
+  
+  /**
+  * @type  { Spike [] }
+  */
+  let spikes;
 
 // 'update()' is called every frame (60 times per second).
 function update() {
-  // 'ticks' counts the number of frames from the start of the game.
   if (!ticks) {
-    // Initialize the game state here. (ticks === 0)
-    pins = [vec(50, 0)]; // 'vec()' creates a 2d vector instance.
-    nextPinDist = 10;
-    cord = { angle: 4.71, length: cordLength, pin: pins[0] };
+    // A CrispGameLib function
+    // First argument (number): number of times to run the second argument
+    // Second argument (function): a function that returns an object. This
+    // object is then added to an array. This array will eventually be
+    // returned as output of the times() function.
+    /*droplets = times(6, () => {
+      // Random number generator function
+      // rnd( min, max )
+      const posX = rnd(0, G.WIDTH);
+      const posY = rnd(0, G.HEIGHT);
+      // An object of type Droplet with appropriate properties
+      return {
+        pos: vec(posX, posY),
+        speed: rnd(G.DROPLET_SPEED_MIN, G.DROPLET_SPEED_MAX)
+      };
+    });*/
+    spikes = times(3, () => {
+      // Random number generator function
+      // rnd( min, max )
+      const posX = rnd(0, G.WIDTH);
+      const posY = G.HEIGHT
+      // An object of type Spike with appropriate properties
+      return {
+        pos: vec(posX, posY),
+	      speed: rnd(G.SPIKE_SPEED_MIN, G.SPIKE_SPEED_MAX)
+      };
+    });
   }
-  // 'difficulty' represents the difficulty of the game.
-  // The value of this variable is 1 at the beginning of the game and
-  // increases by 1 every minute.
-  let scr = difficulty * 0.02;
-  if (cord.pin.y < 80) {
-    scr += (80 - cord.pin.y) * 0.1;
-  }
-  // 'input.isJustPressed' is set to true the moment the button is pressed.
-  if (input.isJustPressed) {
-    // 'play()' plays the SE.
-    play("select");
-  }
-  // 'input.isPressed' is set to true while the button is pressed.
-  if (input.isPressed) {
-    cord.length += difficulty;
-  } else {
-    cord.length += (cordLength - cord.length) * 0.1;
-  }
-  //cord.angle += difficulty * 0.05;
-  // Draw a line connecting the coordinates of
-  // the first argument and the second argument.
-  line(cord.pin, vec(cord.pin).addWithAngle(cord.angle, cord.length));
-  if (cord.pin.y > 98) {
-    play("explosion");
-    // Call 'end()' to end the game. (Game Over)
-    end();
-  }
-  let nextPin;
-  // 'remove()' passes the elements of the array of the first argument to
-  // the function of the second argument in order and executes it.
-  // If the function returns true, the element will be removed from the array.
-  remove(pins, (p) => {
-    p.y += scr;
-    // Draw a box and check if it collides with other black rectangles or lines.
-    if (box(p, 3).isColliding.rect.black && p !== cord.pin) {
-      nextPin = p;
-    }
-    return p.y > 102;
+  // Update for Droplet
+  /*droplets.forEach((d) => {
+    // Move the droplet downwards
+    d.pos.y += d.speed;
+    // Bring the droplet back to top once it's past the bottom of the screen
+    d.pos.wrap(0, G.WIDTH, 0, G.HEIGHT);
+
+    // Choose a color to draw
+    color("blue");
+    // Draw the droplet as a square of size 1
+    box(d.pos, 1);
+  });*/
+  // Update for Spike
+  spikes.forEach((s) => {
+    // Move the spike downwards
+    s.pos.y += s.speed;
+    // Bring the star back to top once it's past the bottom of the screen
+    s.pos.wrap(0, G.WIDTH, 0, G.HEIGHT);
+
+    // Choose a color to draw
+    color("black");
+    // Draw the star as a square of size 1
+    char("b", vec(s.pos));
   });
-  if (nextPin != null) {
-    play("powerUp");
-    // Add up the score.
-    // By specifying the coordinates as the second argument,
-    // the added score is displayed on the screen.
-    addScore(ceil(cord.pin.distanceTo(nextPin)), nextPin);
-    cord.pin = nextPin;
-    cord.length = cordLength;
-  }
-  nextPinDist -= scr;
-  while (nextPinDist < 0) {
-    // 'rnd()' returns a random value.
-    pins.push(vec(rnd(10, 90), -2 - nextPinDist));
-    nextPinDist += rnd(5, 15);
-  }
 }
