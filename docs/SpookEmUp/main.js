@@ -56,7 +56,10 @@ options = {
   seed: 129,
   isPlayingBgm: true,
   theme: "shapeDark",
-  isReplayEnabled: true
+  isReplayEnabled: true,
+  isCapturing: true,
+  isCapturingGameCanvasOnly: true,
+  captureCanvasScale: 2
 };
 
 /**
