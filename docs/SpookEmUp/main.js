@@ -59,7 +59,7 @@ options = {
   isReplayEnabled: true,
   isCapturing: true,
   isCapturingGameCanvasOnly: true,
-  captureCanvasScale: 2
+  captureCanvasScale: 0.4
 };
 
 /**
